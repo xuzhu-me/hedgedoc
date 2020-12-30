@@ -13,3 +13,4 @@
 - [ ] Run the tests described in the release test document (internal)
 - [ ] Upload tar ball to github and add a release tag
 - [ ] Update container images
+- [ ] Update website by running the ["deploy" workflow](https://github.com/hedgedoc/hedgedoc.github.io/actions?query=workflow%3A%22Deploy+to+github+actions+branch%22) in hedgedoc/hedgedoc.github.io
