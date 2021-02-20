@@ -22,6 +22,8 @@ import { AuthorColor } from '../notes/author-color.entity';
 import { Revision } from '../revisions/revision.entity';
 import { Tag } from '../notes/tag.entity';
 import { Group } from '../groups/group.entity';
+import { ConfigModule } from '@nestjs/config';
+import appConfigMock from '../config/app.config.mock';
 
 describe('PermissionsService', () => {
   let permissionsService: PermissionsService;
@@ -29,7 +31,16 @@ describe('PermissionsService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [PermissionsService],
-      imports: [PermissionsModule, UsersModule, LoggerModule, NotesModule],
+      imports: [
+        PermissionsModule,
+        UsersModule,
+        LoggerModule,
+        NotesModule,
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [appConfigMock],
+        }),
+      ],
     })
       .overrideProvider(getRepositoryToken(User))
       .useValue({})

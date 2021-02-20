@@ -26,6 +26,7 @@ import { UsersModule } from '../../src/users/users.module';
 import { HistoryModule } from '../../src/history/history.module';
 import { ConfigModule } from '@nestjs/config';
 import mediaConfigMock from '../../src/config/media.config.mock';
+import appConfigMock from '../../src/config/app.config.mock';
 import { User } from '../../src/users/user.entity';
 
 // TODO Tests have to be reworked using UserService functions
@@ -42,7 +43,7 @@ describe('Notes', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          load: [mediaConfigMock],
+          load: [mediaConfigMock, appConfigMock],
         }),
         PublicApiModule,
         NotesModule,
