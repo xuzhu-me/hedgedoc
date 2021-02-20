@@ -5,7 +5,7 @@
  */
 
 import { INestApplication } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
@@ -30,6 +30,7 @@ describe('Notes', () => {
   let notesService: NotesService;
   let user: User;
   let content: string;
+  let forbiddenNoteId: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -58,6 +59,8 @@ describe('Notes', () => {
       .useClass(MockAuthGuard)
       .compile();
 
+    const config = moduleRef.get<ConfigService>(ConfigService);
+    forbiddenNoteId = config.get('appConfig').forbiddenNoteIds[0];
     app = moduleRef.createNestApplication();
     await app.init();
     notesService = moduleRef.get(NotesService);
@@ -114,6 +117,15 @@ describe('Notes', () => {
           await notesService.getNoteByIdOrAlias(response.body.metadata?.id),
         ),
       ).toEqual(content);
+    });
+
+    it('fails with a forbidden alias', async () => {
+      await request(app.getHttpServer())
+        .post(`/notes/${forbiddenNoteId}`)
+        .set('Content-Type', 'text/markdown')
+        .send(content)
+        .expect('Content-Type', /json/)
+        .expect(400);
     });
 
     it('fails with a existing alias', async () => {
