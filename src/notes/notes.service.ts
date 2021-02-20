@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   AlreadyInDBError,
+  ForbiddenIdError,
   NotInDBError,
   PermissionsUpdateInconsistentError,
 } from '../errors/errors';
@@ -91,6 +92,15 @@ export class NotesService {
     ]);
     if (alias) {
       newNote.alias = alias;
+      if (this.appConfig.forbiddenNoteIds.includes(alias)) {
+        this.logger.debug(
+          `A note with the alias '${alias}' is forbidden by the administrator.`,
+          'createNote',
+        );
+        throw new ForbiddenIdError(
+          `A note with the alias '${alias}' is forbidden by the administrator.`,
+        );
+      }
     }
     if (owner) {
       newNote.historyEntries = [HistoryEntry.create(owner)];

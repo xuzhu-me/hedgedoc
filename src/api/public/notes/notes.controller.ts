@@ -21,6 +21,7 @@ import {
 } from '@nestjs/common';
 import {
   AlreadyInDBError,
+  ForbiddenIdError,
   NotInDBError,
   PermissionsUpdateInconsistentError,
 } from '../../../errors/errors';
@@ -111,6 +112,9 @@ export class NotesController {
       );
     } catch (e) {
       if (e instanceof AlreadyInDBError) {
+        throw new BadRequestException(e.message);
+      }
+      if (e instanceof ForbiddenIdError) {
         throw new BadRequestException(e.message);
       }
       throw e;
