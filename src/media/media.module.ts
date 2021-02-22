@@ -13,6 +13,7 @@ import { UsersModule } from '../users/users.module';
 import { FilesystemBackend } from './backends/filesystem-backend';
 import { MediaUpload } from './media-upload.entity';
 import { MediaService } from './media.service';
+import { AzureBackend } from './backends/azure-backend';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { MediaService } from './media.service';
     LoggerModule,
     ConfigModule,
   ],
-  providers: [MediaService, FilesystemBackend],
+  providers: [MediaService, FilesystemBackend, AzureBackend],
   exports: [MediaService],
 })
 export class MediaModule {}
