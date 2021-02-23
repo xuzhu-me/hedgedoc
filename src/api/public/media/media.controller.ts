@@ -12,7 +12,7 @@ import {
   NotFoundException,
   Param,
   Post,
-  Request,
+  Req,
   UnauthorizedException,
   UploadedFile,
   UseGuards,
@@ -46,7 +46,7 @@ export class MediaController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async uploadMedia(
-    @Request() req,
+    @Req() req,
     @UploadedFile() file: MulterFile,
     @Headers('HedgeDoc-Note') noteId: string,
   ): Promise<MediaUploadUrlDto> {
@@ -73,7 +73,7 @@ export class MediaController {
   @UseGuards(TokenAuthGuard)
   @Delete(':filename')
   async deleteMedia(
-    @Request() req,
+    @Req() req,
     @Param('filename') filename: string,
   ): Promise<void> {
     const username = req.user.userName;
