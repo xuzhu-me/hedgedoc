@@ -18,9 +18,10 @@ export interface MediaConfig {
     s3: {
       accessKeyId: string;
       secretAccessKey: string;
-      region: string;
       bucket: string;
       endPoint: string;
+      secure: boolean;
+      port: number;
     };
     azure: {
       connectionString: string;
@@ -49,9 +50,20 @@ const mediaSchema = Joi.object({
       then: Joi.object({
         accessKey: Joi.string().label('HD_MEDIA_BACKEND_S3_ACCESS_KEY'),
         secretKey: Joi.string().label('HD_MEDIA_BACKEND_S3_SECRET_KEY'),
-        endPoint: Joi.string().label('HD_MEDIA_BACKEND_S3_ENDPOINT'),
-        secure: Joi.boolean().label('HD_MEDIA_BACKEND_S3_SECURE'),
-        port: Joi.number().label('HD_MEDIA_BACKEND_S3_PORT'),
+        bucket: Joi.string().label('HD_MEDIA_BACKEND_S3_BUCKET'),
+        endPoint: Joi.string()
+          .pattern(/^(?!http).*/)
+          .label('HD_MEDIA_BACKEND_S3_ENDPOINT')
+          .messages({
+            'string.pattern.base':
+              '{#label} can not start with "http" or "https"',
+          }),
+        secure: Joi.boolean().default(true).label('HD_MEDIA_BACKEND_S3_SECURE'),
+        port: Joi.when('secure', {
+          is: Joi.valid(true),
+          then: Joi.number().default(443).label('HD_MEDIA_BACKEND_S3_PORT'),
+          otherwise: Joi.number().default(80).label('HD_MEDIA_BACKEND_S3_PORT'),
+        }),
       }),
       otherwise: Joi.optional(),
     }),
@@ -86,6 +98,7 @@ export default registerAs('mediaConfig', async () => {
         s3: {
           accessKey: process.env.HD_MEDIA_BACKEND_S3_ACCESS_KEY,
           secretKey: process.env.HD_MEDIA_BACKEND_S3_SECRET_KEY,
+          bucket: process.env.HD_MEDIA_BACKEND_S3_BUCKET,
           endPoint: process.env.HD_MEDIA_BACKEND_S3_ENDPOINT,
           secure: process.env.HD_MEDIA_BACKEND_S3_SECURE,
           port: parseInt(process.env.HD_MEDIA_BACKEND_S3_PORT) || undefined,
