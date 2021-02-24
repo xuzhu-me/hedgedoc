@@ -198,7 +198,7 @@ export class NotesController {
         throw new UnauthorizedException('Reading note denied!');
       }
       return await this.noteService.toNoteMetadataDto(note);
-    } catch (e) {
+    } catch (e: unknown) {
       if (e instanceof NotInDBError) {
         throw new NotFoundException(e.message);
       }
@@ -222,7 +222,7 @@ export class NotesController {
         throw new UnauthorizedException('Updating note denied!');
       }
       return this.noteService.toNotePermissionsDto(
-        this.noteService.updateNotePermissions(note, updateDto),
+        await this.noteService.updateNotePermissions(note, updateDto),
       );
     } catch (e) {
       if (e instanceof NotInDBError) {
